@@ -1,0 +1,323 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MicroSaas To-Do API",
+        "description": "API de gerenciamento de quadros e cartões Kanban",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Servidor local"
+        }
+    ],
+    "paths": {
+        "/api/boards": {
+            "get": {
+                "tags": [
+                    "Boards"
+                ],
+                "summary": "Lista todos os quadros",
+                "operationId": "22c1b4dcc14110fc84dde21f6af5560b",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Boards"
+                ],
+                "summary": "Cria um novo quadro",
+                "operationId": "475fc0adeff918edaca9ab0b788b5e2b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/api/boards/{id}": {
+            "get": {
+                "tags": [
+                    "Boards"
+                ],
+                "summary": "Exibe um quadro",
+                "operationId": "34f214deef78cf734160f16e50359c00",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Boards"
+                ],
+                "summary": "Atualiza um quadro",
+                "operationId": "8a09dc1c0993a4ce9624565318ade1b2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Atualizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Boards"
+                ],
+                "summary": "Remove um quadro",
+                "operationId": "77f6148a023d46049d56890821f8c822",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Removido"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            }
+        },
+        "/api/cards": {
+            "get": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Lista todos os cartões",
+                "operationId": "0cf776c75245f5f70e78d1981e3398c2",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Cria um novo cartão",
+                "operationId": "6a1db83adb51fba2ac318a78bc2a4fde",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "board_id",
+                                    "title"
+                                ],
+                                "properties": {
+                                    "board_id": {
+                                        "type": "integer"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "position": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/api/cards/{id}": {
+            "get": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Exibe um cartão",
+                "operationId": "bd308067275d232e63f1b561207c465c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Atualiza um cartão",
+                "operationId": "b3c8304bb7aa7bd6ab93c12179f9cec1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "board_id": {
+                                        "type": "integer"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "position": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Atualizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Remove um cartão",
+                "operationId": "11c178be9e92d6cae99961ae40786f25",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Removido"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Boards",
+            "description": "Boards"
+        },
+        {
+            "name": "Cards",
+            "description": "Cards"
+        }
+    ]
+}

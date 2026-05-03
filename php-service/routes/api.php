@@ -24,3 +24,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     });
 
 });
+use App\Http\Controllers\BoardController;
+
+Route::apiResource('boards', BoardController::class);
+Route::apiResource('cards', CardController::class);
