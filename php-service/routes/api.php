@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CardController; 
+use App\Http\Controllers\CardController;
+use App\Http\Controllers\BoardController;
 
 
 Route::get('/health', function () {
@@ -13,8 +14,6 @@ Route::get('/health', function () {
 });
 
 Route::middleware(['auth.jwt'])->group(function () {
-    
-    Route::post('/cards', [CardController::class, 'store']);
 
     Route::get('/user-check', function (Request $request) {
         return response()->json([
@@ -23,8 +22,10 @@ Route::middleware(['auth.jwt'])->group(function () {
         ]);
     });
 
-});
-use App\Http\Controllers\BoardController;
+    Route::apiResource('boards', BoardController::class);
+    Route::apiResource('cards', CardController::class);
 
-Route::apiResource('boards', BoardController::class);
-Route::apiResource('cards', CardController::class);
+});
+
+
+
