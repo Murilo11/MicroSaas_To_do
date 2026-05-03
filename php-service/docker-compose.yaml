@@ -1,0 +1,49 @@
+services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile # Você precisará de um Dockerfile simples para o PHP-FPM
+    container_name: micro-app
+    volumes:
+      - .:/var/www
+    networks:
+      - microsaas-net
+
+  # Nginx Server
+  webserver:
+    image: nginx:alpine
+    container_name: micro-webserver
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www
+      - ./docker-config/nginx:/etc/nginx/conf.d # Configuração do site
+    networks:
+      - microsaas-net
+
+  # Database (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: micro-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: microsaas
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - microsaas-net
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: micro-rabbitmq
+    ports:
+      - "5672:5672"   # Porta do serviço
+      - "15672:15672" # Painel administrativo (login: guest/guest)
+    networks:
+      - microsaas-net
+
+networks:
+  microsaas-net:
+    driver: bridge
