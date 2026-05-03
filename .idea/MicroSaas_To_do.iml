@@ -2,10 +2,8 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/php-service/app" isTestSource="false" packagePrefix="App\" />
-      <sourceFolder url="file://$MODULE_DIR$/php-service/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
-      <sourceFolder url="file://$MODULE_DIR$/php-service/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
-      <sourceFolder url="file://$MODULE_DIR$/php-service/tests" isTestSource="true" packagePrefix="Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/php-service/tests/Feature" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php-service/tests/Unit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/carbonphp/carbon-doctrine-types" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/composer" />
@@ -120,6 +118,12 @@
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/storage/framework" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/darkaonline/l5-swagger" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/phpstan/phpdoc-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/radebatz/type-info-extras" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/swagger-api/swagger-ui" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/symfony/type-info" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/zircote/swagger-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
