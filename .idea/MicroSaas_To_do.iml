@@ -132,6 +132,11 @@
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/firebase/php-jwt" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/laravel/sanctum" />
       <excludeFolder url="file://$MODULE_DIR$/php-service/storage/api-docs" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/paragonie/constant_time_encoding" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/php-amqplib/php-amqplib" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/phpseclib/phpseclib" />
+      <excludeFolder url="file://$MODULE_DIR$/php-service/vendor/vladimir-yuldashev/laravel-queue-rabbitmq" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/carbonphp/carbon-doctrine-types" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />

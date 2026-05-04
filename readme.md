@@ -1,10 +1,45 @@
-# 📋 MicroSaas To-Do
+# 📋 MicroSaaS To-Do
 
-Aplicação de gerenciamento de tarefas no estilo Kanban, construída com **Laravel 12** e **PHP 8.3**, utilizando uma arquitetura orientada a repositórios. O projeto é containerizado com Docker e inclui suporte a filas via RabbitMQ.
+Bem-vindo ao **MicroSaaS To-Do**, uma aplicação moderna de gerenciamento de tarefas no estilo Kanban com agendamento de reuniões. O projeto foi projetado utilizando uma **Arquitetura de Microsserviços** e comunicação baseada em eventos (Event-Driven Architecture).
 
 ---
 
-## 🚀 Tecnologias
+## 🏗️ Arquitetura do Sistema
+
+O ecossistema é dividido em três componentes principais que se comunicam de forma assíncrona para garantir alta disponibilidade e escalabilidade.
+
+```mermaid
+graph TD
+    A[📱 Frontend Flutter] -->|REST API / JWT| B(🟩 Serviço de Reuniões - Node.js)
+    A -->|REST API| C(🐘 Serviço Kanban - Laravel)
+    B -->|Publica Evento: Reunião Criada| D{🐰 RabbitMQ}
+    D -->|Consome Evento| C
+    B -.->|PostgreSQL| DB1[(Banco de Reuniões)]
+    C -.->|MySQL| DB2[(Banco Kanban)]
+```
+
+### 1. Frontend (Flutter)
+- Interface de usuário moderna e fluida ("Futuristic Kanban").
+- Integração da tela de Kanban e Agendamento de Reuniões.
+- Comunicação centralizada via `ApiClient` com os diferentes microsserviços.
+
+### 2. Serviço de Reuniões (Node.js + Prisma)
+- Gerencia a criação e o agendamento de reuniões.
+- Banco de Dados: **PostgreSQL**.
+- Ao criar uma nova reunião, este serviço publica um evento na fila do **RabbitMQ** para que uma tarefa/cartão correspondente seja criada no Kanban automaticamente.
+
+### 3. Serviço Kanban (PHP 8.3 + Laravel 12) *[Contido neste repositório]*
+- Gerencia quadros (Boards) e cartões (Cards) do Kanban.
+- Banco de Dados: **MySQL 8.0**.
+- Atua como um *Consumer*, lendo os eventos do RabbitMQ para transformar automaticamente as novas reuniões em tarefas no Kanban.
+
+---
+
+## 🐘 Serviço Kanban (Repositório Atual)
+
+Este repositório contém o código fonte do **Serviço Kanban**, focado no back-end de gestão das tarefas e no consumo de filas do RabbitMQ.
+
+### 🚀 Tecnologias
 
 | Camada | Tecnologia |
 |---|---|
@@ -14,32 +49,20 @@ Aplicação de gerenciamento de tarefas no estilo Kanban, construída com **Lara
 | Containerização | Docker + Docker Compose |
 | Servidor web | Nginx (Alpine) |
 | Filas | RabbitMQ 3 |
-| Testes | PHPUnit 11 |
-| Linting | Laravel Pint |
+| Documentação | Swagger / L5-Swagger |
 
----
+### 📦 Estrutura do Projeto
 
-## 📦 Estrutura do projeto
-
-```
+```text
 MicroSaas_To_do/
-├── php-service/                  # Aplicação Laravel
+├── php-service/                  # Aplicação Laravel (Microsserviço Kanban)
 │   ├── app/
-│   │   ├── Http/Controllers/     # Controllers HTTP
-│   │   ├── Models/               # Modelos Eloquent
-│   │   │   ├── Board.php         # Quadro Kanban
-│   │   │   └── Card.php          # Cartão/Tarefa
-│   │   └── Repositories/
-│   │       ├── Contracts/        # Interfaces dos repositórios
-│   │       └── Eloquent/         # Implementações Eloquent
-│   ├── database/
-│   │   ├── migrations/           # Migrações do banco de dados
-│   │   └── seeders/              # Seeders
-│   ├── docker-config/
-│   │   └── nginx/nginx.conf      # Configuração do Nginx
+│   │   ├── Http/Controllers/     # Controllers REST API
+│   │   ├── Jobs/                 # Processamento de Filas (Ex: ProcessarEventoReuniao)
+│   │   ├── Models/               # Modelos Eloquent (Board, Card)
+│   │   └── Repositories/         # Repository Pattern (Interface e Implementação Eloquent)
 │   ├── routes/
-│   │   └── web.php               # Rotas da aplicação
-│   ├── tests/                    # Testes Feature e Unit
+│   ├── docker-config/
 │   ├── Dockerfile
 │   └── docker-compose.yaml
 └── README.md
@@ -47,41 +70,15 @@ MicroSaas_To_do/
 
 ---
 
-## 🗄️ Modelo de dados
-
-### Board (Quadro)
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `id` | bigint | Chave primária |
-| `title` | string | Nome do quadro |
-| `created_at` | timestamp | Data de criação |
-| `updated_at` | timestamp | Data de atualização |
-
-### Card (Cartão)
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `id` | bigint | Chave primária |
-| `board_id` | bigint (FK) | Referência ao quadro |
-| `title` | string | Título do cartão |
-| `description` | text (nullable) | Descrição opcional |
-| `position` | integer | Posição no quadro (default: 0) |
-| `created_at` | timestamp | Data de criação |
-| `updated_at` | timestamp | Data de atualização |
-
----
-
-## ⚙️ Pré-requisitos
+## ⚙️ Pré-requisitos Gerais
 
 - **Docker** e **Docker Compose**
-- **PHP 8.2+** (para execução local sem Docker)
-- **Composer**
+- **PHP 8.2+** e **Composer** (para execução local sem Docker)
 - **Node.js 18+** e **npm**
 
 ---
 
-## 🔧 Instalação e execução
-
-### Com Docker (recomendado)
+## 🔧 Instalação e Execução (Com Docker - Recomendado)
 
 **1. Clone o repositório:**
 ```bash
@@ -93,8 +90,7 @@ cd MicroSaas_To_do/php-service
 ```bash
 cp .env.example .env
 ```
-
-Edite o `.env` para apontar para o banco MySQL do Docker:
+*Edite o arquivo `.env` para apontar para o banco MySQL do Docker:*
 ```env
 DB_CONNECTION=mysql
 DB_HOST=db
@@ -116,123 +112,35 @@ docker exec -it micro-app php artisan key:generate
 docker exec -it micro-app php artisan migrate
 ```
 
-**5. Acesse a aplicação:**
-- Aplicação: [http://localhost:8080](http://localhost:8080)
-- RabbitMQ: [http://localhost:15672](http://localhost:15672) (usuário: `guest` / senha: `guest`)
+**5. Acesse os Serviços:**
+- Aplicação Laravel: [http://localhost:8080](http://localhost:8080)
+- Documentação Swagger: [http://localhost:8080/api/documentation](http://localhost:8080/api/documentation)
+- RabbitMQ Management: [http://localhost:15672](http://localhost:15672) (user: `guest` / pass: `guest`)
 
 ---
-
-### Sem Docker (ambiente local)
-
-**1. Instale as dependências:**
-```bash
-cd php-service
-composer install
-npm install
-```
-
-**2. Configure o ambiente:**
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-**3. Execute as migrações e rode o servidor:**
-```bash
-php artisan migrate
-composer run dev
-```
-
-O comando `dev` inicia simultaneamente o servidor PHP, o worker de filas, o log watcher (Pail) e o Vite.
-
----
-
-## 🐳 Serviços Docker
-
-| Serviço | Container | Porta |
-|---|---|---|
-| PHP-FPM (app) | `micro-app` | 9000 (interno) |
-| Nginx | `micro-webserver` | `8080:80` |
-| MySQL | `micro-db` | `3306:3306` |
-| RabbitMQ | `micro-rabbitmq` | `5672`, `15672` |
-
----
-
-## 🧪 Testes
-
-```bash
-# Com Docker
-docker exec -it micro-app php artisan test
-
-# Local
-php artisan test
-
-# Ou via composer
-composer run test
-```
-
-Os testes rodam com SQLite em memória, conforme configurado no `phpunit.xml`, sem afetar o banco de dados de desenvolvimento.
-
----
-
-## 🏗️ Arquitetura
-
-O projeto segue o padrão **Repository Pattern**, desacoplando a lógica de negócio do acesso ao banco de dados:
-
-```
-Controller → Service → Repository Interface → Eloquent Repository → Model
-```
-
-- **`CardRepositoryInterface`** — define o contrato com os métodos `getAll`, `findById`, `create`, `update` e `delete`.
-- **`EloquentCardRepository`** — implementa a interface utilizando os Models do Eloquent.
-
-Essa abordagem facilita a troca de implementação (ex: de Eloquent para uma API externa) sem alterar os controllers ou a lógica de negócio.
-
----
-
-## 🎨 Frontend
-
-O projeto usa **Tailwind CSS v4** integrado via **Vite**. Para compilar os assets:
-
-```bash
-# Build para produção
-npm run build
-
-# Modo de desenvolvimento com hot reload
-npm run dev
-```
-
----
-
-## 📝 Variáveis de ambiente relevantes
-
-| Variável | Descrição | Padrão |
-|---|---|---|
-| `APP_KEY` | Chave de criptografia da aplicação | gerada via `artisan key:generate` |
-| `APP_ENV` | Ambiente (`local`, `production`) | `local` |
-| `DB_CONNECTION` | Driver de banco (`sqlite`, `mysql`) | `sqlite` |
-| `DB_HOST` | Host do banco de dados | `127.0.0.1` |
-| `DB_DATABASE` | Nome do banco de dados | `laravel` |
-| `QUEUE_CONNECTION` | Driver de filas | `database` |
 
 ## 🐰 Mensageria com RabbitMQ (Testando e Consumindo Filas)
 
-A aplicação está configurada para consumir eventos (como criação de reuniões) que são publicados no RabbitMQ por outros microsserviços.
+O Laravel atua como *Consumer* dos eventos publicados pelo microsserviço Node.js.
 
-**Para iniciar o consumo de mensagens:**
+**Para iniciar o consumo de mensagens (Worker):**
 ```bash
+# Se estiver usando Docker:
+docker exec -it micro-app php artisan queue:work
+
+# Se estiver rodando localmente (sem docker):
 cd php-service
 php artisan queue:work
 ```
 
-### Testando o envio de eventos
+### Simulando o envio de eventos
 
-Você pode simular o envio de um evento direto pelo painel de administração do RabbitMQ para ver um cartão (card) sendo gerado de forma automática:
+Você pode simular o envio de um evento direto pelo painel de administração do RabbitMQ para testar a automação de criação de cards:
 
-1. Acesse o **RabbitMQ Management UI**: [http://localhost:15672](http://localhost:15672) (login: `guest`, senha: `guest`).
+1. Acesse o **RabbitMQ Management UI**: [http://localhost:15672](http://localhost:15672).
 2. Navegue até a aba **Queues** e clique na fila correspondente (geralmente `default`).
 3. Expanda a área **Publish message**.
-4. No campo **Payload**, insira o formato JSON esperado pelo sistema:
+4. No campo **Payload**, insira o formato JSON esperado pelo job `ProcessarEventoReuniao`:
    ```json
    {
        "title": "Reunião de Alinhamento Estratégico",
@@ -240,19 +148,45 @@ Você pode simular o envio de um evento direto pelo painel de administração do
        "date": "15/05/2026 às 10:00"
    }
    ```
-5. Clique no botão **Publish message**.
+5. Clique em **Publish message**.
 
-Ao fazer isso, observe o terminal onde está rodando o `queue:work`. O job `App\Jobs\ProcessarEventoReuniao` será processado e, ao verificar seu banco de dados, você notará que um novo **Card** foi criado e adicionado ao "Board Principal".
+Ao fazer isso, observe o terminal onde está rodando o `queue:work`. O evento será processado e um novo **Card** será criado e adicionado ao "Board" padrão no seu banco de dados MySQL.
+
+---
+
+## 🏗️ Padrão de Projeto (Repository Pattern)
+
+O serviço Kanban utiliza o **Repository Pattern**, desacoplando a lógica de negócio do acesso direto ao banco de dados via Eloquent.
+
+- **`CardRepositoryInterface`**: Define o contrato e os métodos base (`getAll`, `findById`, `create`, `update`, `delete`).
+- **`EloquentCardRepository`**: Implementa a interface utilizando os Models do Eloquent.
+
+Essa abordagem facilita a manutenção, permite a troca da fonte de dados (caso a aplicação mude) sem afetar os controllers, e torna os testes mais confiáveis.
+
+---
+
+## 🧪 Testes
+
+A aplicação utiliza o **PHPUnit** para garantir o funcionamento correto de suas funcionalidades.
+
+```bash
+# Executando testes via Docker
+docker exec -it micro-app php artisan test
+
+# Executando testes localmente
+php artisan test
+```
+*Observação: Os testes rodam utilizando o SQLite em memória, conforme configurado no `phpunit.xml`, portanto não afetam os dados do ambiente de desenvolvimento.*
 
 ---
 
 ## 🤝 Contribuindo
 
-1. Crie uma branch a partir de `main`:
+1. Crie uma branch a partir da `main`:
    ```bash
-   git checkout -b feature/minha-feature
+   git checkout -b feature/minha-nova-funcionalidade
    ```
-2. Faça suas alterações e formate o código:
+2. Faça suas alterações e formate o código utilizando o Laravel Pint:
    ```bash
    ./vendor/bin/pint
    ```
@@ -260,7 +194,4 @@ Ao fazer isso, observe o terminal onde está rodando o `queue:work`. O job `App\
    ```bash
    php artisan test
    ```
-4. Abra um Pull Request descrevendo as mudanças.
-
----
-
+4. Abra um Pull Request detalhando suas mudanças.
