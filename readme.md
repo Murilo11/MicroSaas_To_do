@@ -215,6 +215,35 @@ npm run dev
 | `DB_DATABASE` | Nome do banco de dados | `laravel` |
 | `QUEUE_CONNECTION` | Driver de filas | `database` |
 
+## 🐰 Mensageria com RabbitMQ (Testando e Consumindo Filas)
+
+A aplicação está configurada para consumir eventos (como criação de reuniões) que são publicados no RabbitMQ por outros microsserviços.
+
+**Para iniciar o consumo de mensagens:**
+```bash
+cd php-service
+php artisan queue:work
+```
+
+### Testando o envio de eventos
+
+Você pode simular o envio de um evento direto pelo painel de administração do RabbitMQ para ver um cartão (card) sendo gerado de forma automática:
+
+1. Acesse o **RabbitMQ Management UI**: [http://localhost:15672](http://localhost:15672) (login: `guest`, senha: `guest`).
+2. Navegue até a aba **Queues** e clique na fila correspondente (geralmente `default`).
+3. Expanda a área **Publish message**.
+4. No campo **Payload**, insira o formato JSON esperado pelo sistema:
+   ```json
+   {
+       "title": "Reunião de Alinhamento Estratégico",
+       "description": "Discussão das prioridades do trimestre.",
+       "date": "15/05/2026 às 10:00"
+   }
+   ```
+5. Clique no botão **Publish message**.
+
+Ao fazer isso, observe o terminal onde está rodando o `queue:work`. O job `App\Jobs\ProcessarEventoReuniao` será processado e, ao verificar seu banco de dados, você notará que um novo **Card** foi criado e adicionado ao "Board Principal".
+
 ---
 
 ## 🤝 Contribuindo
