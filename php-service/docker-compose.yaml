@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile # Você precisará de um Dockerfile simples para o PHP-FPM
     container_name: micro-app
     volumes:
-      - .:/var/www
+    - .:/var/www
+
     networks:
       - microsaas-net
 
@@ -17,8 +18,8 @@ services:
     ports:
       - "8081:80"
     volumes:
-      - .:/var/www
-      - ./docker-config/nginx:/etc/nginx/conf.d # Configuração do site
+       - .:/var/www
+        - ./docker-config/nginx:/etc/nginx/conf.d
     networks:
       - microsaas-net
 

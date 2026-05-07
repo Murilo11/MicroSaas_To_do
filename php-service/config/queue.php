@@ -92,7 +92,7 @@ return [
         'rabbitmq' => [
             'driver' => 'rabbitmq',
             'queue' => env('RABBITMQ_QUEUE', 'default'),
-            'connection' => PhpAmqpLib\Connection\AMQPLazyConnection::class,
+            'connection' => env('RABBITMQ_CONNECTION', 'rabbitmq'),
 
             'hosts' => [
                 [
