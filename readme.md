@@ -106,16 +106,19 @@ docker-compose up -d --build
 ```
 
 **4. Instale as dependências e configure a aplicação:**
+> **Dica para Mac Intel:** Se o Docker não conectar, execute `docker context use colima` antes dos comandos abaixo.
+
 ```bash
 docker exec -it micro-app composer install
 docker exec -it micro-app php artisan key:generate
 docker exec -it micro-app php artisan migrate
-```
+# Garanta permissões de escrita para o Laravel
+docker exec -it micro-app chmod -R 777 storage bootstrap/cache
 
 **5. Acesse os Serviços:**
-- Aplicação Laravel: [http://localhost:8080](http://localhost:8080)
-- Documentação Swagger: [http://localhost:8080/api/documentation](http://localhost:8080/api/documentation)
-- RabbitMQ Management: [http://localhost:15672](http://localhost:15672) (user: `guest` / pass: `guest`)
+- Aplicação Laravel: http://localhost:8081
+- Documentação Swagger: http://localhost:8081/api/documentation
+- RabbitMQ Management: http://localhost:15672 (user: `guest` / pass: `guest`)
 
 ---
 
