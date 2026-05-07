@@ -15,7 +15,7 @@ services:
     image: nginx:alpine
     container_name: micro-webserver
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - .:/var/www
       - ./docker-config/nginx:/etc/nginx/conf.d # Configuração do site
