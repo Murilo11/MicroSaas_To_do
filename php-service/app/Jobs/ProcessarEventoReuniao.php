@@ -2,46 +2,38 @@
 
 namespace App\Jobs;
 
+// Importa a classe do pacote que o seu 'find' localizou
 use VladimirYuldashev\LaravelQueueRabbitMQ\Queue\Jobs\RabbitMQJob;
-use App\Models\Card;
+use App\Repositories\Contracts\CardRepositoryInterface;
+use Illuminate\Support\Facades\Log;
 
 class ProcessarEventoReuniao extends RabbitMQJob
 {
-    /**
-     * Execute the job.
-     */
-    public function fire(): void
+    public function handle(CardRepositoryInterface $cardRepository): void
     {
-        $this->handle();
-    }
+        try {
+            $body = $this->getRawBody(); //[cite: 85]
+            $dados = json_decode($body, true); //[cite: 85]
 
-    public function handle(): void
-    {
-        $body = $this->getRawBody();
-        $dados = json_decode($body, true);
+            Log::info('RabbitMQ: Recebendo evento de reunião', ['payload' => $dados]); //[cite: 113, 133]
 
-        if (is_array($dados) && isset($dados['title'])) {
-            $titulo = $dados['title'];
-            $descricaoBase = $dados['description'] ?? '';
-            $dataReuniao = $dados['date'] ?? '';
-            
-            $conteudo = trim($descricaoBase . "\n" . $dataReuniao);
+            if (is_array($dados) && isset($dados['title'])) {
+                $cardData = [
+                    'title'       => $dados['title'],
+                    'description' => $dados['description'] ?? 'Criado via Node.js',
+                    'board_id'    => 1, // Valor fixo inicial como no seu original
+                ];
 
-            // Associar a um board_id e column_id existentes (assumindo 1 por padrão)
-            $cardData = [
-                'title' => $titulo,
-                'description' => $conteudo,
-                'board_id' => 1,
-            ];
-
-            // If column_id exists in fillable, let's add it too.
-            if (in_array('column_id', (new Card())->getFillable())) {
-                $cardData['column_id'] = 1;
+                $cardRepository->create($cardData); //[cite: 119]
+                
+                Log::info('RabbitMQ: Card criado com sucesso!'); // [cite: 120]
             }
 
-            Card::create($cardData);
-        }
+            $this->delete(); 
 
-        $this->delete();
+        } catch (\Exception $e) {
+            Log::error('RabbitMQ: Erro ao processar job: ' . $e->getMessage()); // [cite: 122]
+            throw $e; //  [cite: 123]
+        }
     }
 }
