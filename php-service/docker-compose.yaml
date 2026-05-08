@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile # Você precisará de um Dockerfile simples para o PHP-FPM
     container_name: micro-app
     volumes:
-    - .:/var/www/html
+    - .:/var/www
 
     networks:
       - microsaas-net

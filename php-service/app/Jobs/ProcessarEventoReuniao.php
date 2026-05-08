@@ -2,38 +2,27 @@
 
 namespace App\Jobs;
 
-// Importa a classe do pacote que o seu 'find' localizou
-use VladimirYuldashev\LaravelQueueRabbitMQ\Queue\Jobs\RabbitMQJob;
-use App\Repositories\Contracts\CardRepositoryInterface;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessarEventoReuniao extends RabbitMQJob
+class ProcessarEventoReuniao implements ShouldQueue
 {
-    public function handle(CardRepositoryInterface $cardRepository): void
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public array $data;
+
+    public function __construct(array $data)
     {
-        try {
-            $body = $this->getRawBody(); //[cite: 85]
-            $dados = json_decode($body, true); //[cite: 85]
+        $this->data = $data;
+    }
 
-            Log::info('RabbitMQ: Recebendo evento de reunião', ['payload' => $dados]); //[cite: 113, 133]
-
-            if (is_array($dados) && isset($dados['title'])) {
-                $cardData = [
-                    'title'       => $dados['title'],
-                    'description' => $dados['description'] ?? 'Criado via Node.js',
-                    'board_id'    => 1, // Valor fixo inicial como no seu original
-                ];
-
-                $cardRepository->create($cardData); //[cite: 119]
-                
-                Log::info('RabbitMQ: Card criado com sucesso!'); // [cite: 120]
-            }
-
-            $this->delete(); 
-
-        } catch (\Exception $e) {
-            Log::error('RabbitMQ: Erro ao processar job: ' . $e->getMessage()); // [cite: 122]
-            throw $e; //  [cite: 123]
-        }
+    public function handle(): void
+    {
+        Log::info('--- RABBITMQ: MENSAGEM RECEBIDA COM SUCESSO! ---');
+        Log::info('Conteúdo:', $this->data);
     }
 }

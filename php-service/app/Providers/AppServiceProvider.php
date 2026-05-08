@@ -24,8 +24,10 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(BoardRepositoryInterface::class, EloquentBoardRepository::class);
-        $this->app->bind(CardRepositoryInterface::class, EloquentCardRepository::class);
+        $this->app->bind(
+            CardRepositoryInterface::class,
+            EloquentCardRepository::class
+        );
     }
 
     public function boot(): void
