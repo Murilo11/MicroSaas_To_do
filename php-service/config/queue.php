@@ -91,7 +91,7 @@ return [
 
         'rabbitmq' => [
             'driver' => 'rabbitmq',
-            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            'queue' => env('RABBITMQ_QUEUE', 'reuniao_criada'),
             'connection' => 'default',
             'hosts' => [
                 [
@@ -111,14 +111,8 @@ return [
                     'verify_peer' => env('RABBITMQ_SSL_VERIFY_PEER', true),
                     'passphrase' => env('RABBITMQ_SSL_PASSPHRASE', null),
                 ],
-                'queue' => [
-                    'job' => App\Jobs\ProcessarEventoReuniao::class,
-                ],
             ],
 
-            /*
-             * Set to "horizon" if you wish to use Laravel Horizon.
-             */
             'worker' => env('RABBITMQ_WORKER', 'default'),
         ],
 
