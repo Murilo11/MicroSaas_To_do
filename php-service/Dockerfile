@@ -5,26 +5,16 @@ WORKDIR /var/www
 
 # Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
+    libonig-dev \
+    libxml2-dev \
     zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libzip-dev \
-    libonig-dev
-
+    unzip
 # Limpar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar extensões do PHP
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath sockets
-
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
