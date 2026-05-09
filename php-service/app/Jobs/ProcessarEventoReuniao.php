@@ -22,7 +22,24 @@ class ProcessarEventoReuniao implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info('--- RABBITMQ: MENSAGEM RECEBIDA COM SUCESSO! ---');
-        Log::info('Conteúdo:', $this->data);
+        $payload = $this->data;
+
+        $reuniaoExistente = \Db::table('reunioes_read')->where('id', $payload['id'])->exists();
+
+        if ($reuniaoExistente){
+            Log::warning("Reunião {$payload['id']} já precessada. Ignorando ...");
+            return;
+        }
+
+        \DB::table('reunioes_read')->insert([
+            'id' => $payload['id'],
+            'titulo' => $payload['titulo'],
+            'data_reuniao' => $payload['data_reuniao'],
+            'organizador_nome' => $payload['organizador_nome'],
+            'created_at' => now(),
+            'update_at' =>now(),
+        ]);
+
+        log::info("Reunião {$payload['id']} salvo no banco de leitura com sucesso!");
     }
 }
