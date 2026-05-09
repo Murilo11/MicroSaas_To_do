@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile # Você precisará de um Dockerfile simples para o PHP-FPM
+      dockerfile: Dockerfile 
     container_name: micro-app
     volumes:
     - .:/var/www
@@ -40,11 +40,11 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: micro-rabbitmq
     ports:
-      - "5672:5672"   # Porta do serviço
-      - "15672:15672" # Painel administrativo (login: guest/guest)
+      - "5672:5672"   
+      - "15672:15672" 
     networks:
       - microsaas-net
 
 networks:
   microsaas-net:
-    driver: bridge
+    external: true
