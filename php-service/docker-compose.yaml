@@ -45,6 +45,25 @@ services:
     networks:
       - microsaas-net
 
+  redis:
+    image: redis:7-alpine
+    container_name: cqrs_redis
+    command: redis-server --requirepass admin123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - microsaas-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "admin123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+    redisdata:
+
 networks:
   microsaas-net:
     external: true

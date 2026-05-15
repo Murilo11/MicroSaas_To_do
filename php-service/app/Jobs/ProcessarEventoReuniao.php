@@ -24,7 +24,7 @@ class ProcessarEventoReuniao implements ShouldQueue
     {
         $payload = $this->data;
 
-        $reuniaoExistente = \Db::table('reunioes_read')->where('id', $payload['id'])->exists();
+        $reuniaoExistente = \DB::table('reunioes_read')->where('id', $payload['id'])->exists();
 
         if ($reuniaoExistente){
             Log::warning("Reunião {$payload['id']} já precessada. Ignorando ...");
@@ -37,9 +37,12 @@ class ProcessarEventoReuniao implements ShouldQueue
             'data_reuniao' => $payload['data_reuniao'],
             'organizador_nome' => $payload['organizador_nome'],
             'created_at' => now(),
-            'update_at' =>now(),
+            'updated_at' =>now(),
         ]);
 
-        log::info("Reunião {$payload['id']} salvo no banco de leitura com sucesso!");
+        Cache::forget("reuniao:item:{$payload['id']}");
+        Cache::forget("boards:all"); 
+
+        log::info("Reunião {$payload['id']} salvo no banco e cache invalidado com sucesso!");
     }
 }
