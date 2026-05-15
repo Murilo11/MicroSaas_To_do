@@ -23,7 +23,11 @@ class BoardController extends Controller
     )]
     public function index(): JsonResponse
     {
-        return response()->json($this->boardRepository->getAll());
+        $boards = Cache::remember('boards:all', 300, function () {
+        return $this->boardRepository->getAll();
+        });
+
+        return response()->json($boards);
     }
 
     #[OA\Post(
@@ -58,10 +62,16 @@ class BoardController extends Controller
             new OA\Response(response: 404, description: 'Não encontrado')
         ]
     )]
+
     public function show(int $id): JsonResponse
     {
-        return response()->json($this->boardRepository->findById($id));
+        $board = Cache::remember("board:item:{$id}", 300, function () use ($id) { 
+        return $this->boardRepository->findById($id);
+        });
+
+        return response()->json($board);
     }
+    
 
     #[OA\Put(
         path: '/api/boards/{id}',
@@ -79,10 +89,16 @@ class BoardController extends Controller
             new OA\Response(response: 404, description: 'Não encontrado')
         ]
     )]
+    
     public function update(Request $request, int $id): JsonResponse
     {
         $validated = $request->validate(['title' => 'required|string|max:255']);
-        return response()->json($this->boardRepository->update($id, $validated));
+        $updatedBoard = $this->boardRepository->update($id, $validated);
+
+        Cache::forget("board:item:{$id}");
+        Cache::forget('boards:all'); 
+
+        return response()->json($updatedBoard);
     }
 
     #[OA\Delete(
@@ -98,6 +114,10 @@ class BoardController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $this->boardRepository->delete($id);
+
+        Cache::forget("board:item:{$id}");
+        Cache::forget('boards:all');
+
         return response()->json(null, 204);
     }
 }
