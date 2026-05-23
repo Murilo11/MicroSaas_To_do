@@ -1,5 +1,8 @@
 {
     "require": {
-        "darkaonline/l5-swagger": "^11.0"
+        "darkaonline/l5-swagger": "^11.0",
+        "spatie/laravel-health": "^1.39",
+        "spatie/laravel-prometheus": "^1.6",
+        "ackintosh/ganesha": "^4.0"
     }
 }

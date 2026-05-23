@@ -8,6 +8,11 @@ use App\Repositories\Eloquent\EloquentBoardRepository;
 use App\Repositories\Eloquent\EloquentCardRepository;
 use Illuminate\Support\ServiceProvider;
 
+use Spatie\Health\Facades\Health;
+use Spatie\Health\Checks\Checks\DatabaseCheck;
+use Spatie\Health\Checks\Checks\RedisCheck;
+use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
+
 /**
  * @OA\Info(
  *     title="MicroSaas To-Do API",
@@ -28,10 +33,29 @@ class AppServiceProvider extends ServiceProvider
             CardRepositoryInterface::class,
             EloquentCardRepository::class
         );
+
+            $this->app->bind(
+            BoardRepositoryInterface::class,
+            EloquentBoardRepository::class
+        );
     }
 
     public function boot(): void
     {
-        //
+        Health::register([
+            DatabaseCheck::new(),
+            RedisCheck::new(),
+            UsedDiskSpaceCheck::new()
+                ->warnWhenUsedSpaceIsAbovePercentage(70)
+                ->failWhenUsedSpaceIsAbovePercentage(90),
+        ]);
+
+        // Registrar métricas do Prometheus
+        Prometheus::registerGauge('boards_active_count', 'Total de Boards ativos no banco de dados')
+            ->value(fn () => Board::count());
+            
+        Prometheus::registerGauge('cards_active_count', 'Total de Cards ativos no banco de dados')
+            ->value(fn () => Card::count());
+
     }
 }

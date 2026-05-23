@@ -4,14 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\BoardController;
+use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
 
-
-Route::get('/health', function () {
+// Rota de Liveness (Livre e rápida)
+Route::get('/health/live', function () {
     return response()->json([
-        'status' => 'Microsserviço PHP está rodando!',
-        'time' => now()->toDateTimeString()
-    ]);
+        'status' => 'alive',
+        'timestamp' => now()->toIso8601String()
+    ], 200);
 });
+
+// Rota de Readiness (Valida Banco de Dados, Redis e Disco via Spatie Health)
+Route::get('/health/ready', HealthCheckJsonResultsController::class);
 
 Route::middleware(['auth.jwt'])->group(function () {
 

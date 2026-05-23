@@ -13,10 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
+        $middleware->prepend(\App\Http\Middleware\CorrelationIdMiddleware::class);
+
         $middleware->alias([
             'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class,
         ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
     })->create();
