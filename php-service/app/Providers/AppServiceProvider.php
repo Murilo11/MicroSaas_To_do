@@ -2,16 +2,18 @@
 
 namespace App\Providers;
 
+use App\Models\Board;
+use App\Models\Card;
 use App\Repositories\Contracts\BoardRepositoryInterface;
 use App\Repositories\Contracts\CardRepositoryInterface;
 use App\Repositories\Eloquent\EloquentBoardRepository;
 use App\Repositories\Eloquent\EloquentCardRepository;
 use Illuminate\Support\ServiceProvider;
-
 use Spatie\Health\Facades\Health;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
+use Spatie\Prometheus\Facades\Prometheus;
 
 /**
  * @OA\Info(
@@ -34,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             EloquentCardRepository::class
         );
 
-            $this->app->bind(
+        $this->app->bind(
             BoardRepositoryInterface::class,
             EloquentBoardRepository::class
         );
@@ -42,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Health::register([
+        Health::checks([
             DatabaseCheck::new(),
             RedisCheck::new(),
             UsedDiskSpaceCheck::new()
@@ -51,10 +53,14 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         // Registrar métricas do Prometheus
-        Prometheus::registerGauge('boards_active_count', 'Total de Boards ativos no banco de dados')
+        Prometheus::addGauge('Total de Boards ativos')
+            ->name('boards_active_count')
+            ->helpText('Total de Boards ativos no banco de dados')
             ->value(fn () => Board::count());
-            
-        Prometheus::registerGauge('cards_active_count', 'Total de Cards ativos no banco de dados')
+
+        Prometheus::addGauge('Total de Cards ativos')
+            ->name('cards_active_count')
+            ->helpText('Total de Cards ativos no banco de dados')
             ->value(fn () => Card::count());
 
     }
