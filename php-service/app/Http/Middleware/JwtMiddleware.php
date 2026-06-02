@@ -15,15 +15,19 @@ class JwtMiddleware
     {
 
         $authHeader = $request->header('Authorization');
+        $token = null;
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        if ($authHeader && str_starts_with($authHeader, 'Bearer ')) {
+            $token = str_replace('Bearer ', '', $authHeader);
+        } elseif ($request->has('token')) {
+            $token = $request->query('token');
+        }
+
+        if (!$token) {
             return response()->json(['error' => 'Token não fornecido ou inválido'], 401);
         }
 
         try {
-
-            $token = str_replace('Bearer ', '', $authHeader);
-
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
 
             $request->attributes->add(['user_data' => $decoded]);
